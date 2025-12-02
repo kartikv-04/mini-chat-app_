@@ -42,7 +42,7 @@ export const signupService = async (username : string, email: string, password: 
 
         // save user to database
         const newUser = await createUser.save();
-        logger.info("User created successfully!");
+        logger.info(`User created successfully with email : ${email}`);
         return {
             id : newUser._id,
             username : newUser.username,
@@ -96,8 +96,8 @@ export const loginService = async (email: string, password: string) => {
         await userExist.save();
 
         // Return Tokens
-        logger.info("User logged in Successfully!");
-        return userExist;
+        logger.info(`User logged in Successfully! with email : ${email}`);
+        return {userExist, accessToken};
     }
     catch (error : any) {
         logger.error("Error in signing in user");
@@ -107,9 +107,9 @@ export const loginService = async (email: string, password: string) => {
     
 }
 
-export const logoutService = async (userid : string) => {
+export const logoutService = async (userId : string) => {
     try {
-        const user = await userModel.findById(userid);
+        const user = await userModel.findById(userId);
         if(!user){
             logger.error("User not found ");
             throw Error("USer not found");

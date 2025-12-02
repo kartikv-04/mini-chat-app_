@@ -31,8 +31,8 @@ export const authenticate = (
       throw new Error("ACCESS_SECRET is not defined");
     }
 
-    // FIX APPLIED HERE: Added '!' after ACCESS_SECRET
-    const decoded = jwt.verify(token!, ACCESS_SECRET!) as unknown as {
+    // decode token
+    const decoded = jwt.verify(token!, ACCESS_SECRET!)  as {
       id: string;
       email: string;
     };

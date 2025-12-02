@@ -4,8 +4,12 @@ import http from "http";
 import cors from "cors";
 import { connectDatabase } from "./config/db.js";
 import logger from "./config/logger.js";
-import { MONGO_URI, PORT } from "./env.js";
+import { MONGO_URI, PORT } from "./config/env.js";
 import type { Request, Response } from "express";
+import indexrouter from "./routes/routes.js";
+import { Server } from "socket.io";
+
+
 
 // Create Express app FIRST
 const app = express();
@@ -18,12 +22,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check route
-app.get("/health", (req : Request, res : Response) => {
+app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
 // Routes
-app.use("/api/v1", );
+app.use("/api/v1", indexrouter);
 
 
 // Start server function
@@ -40,6 +44,23 @@ const startServer = async () => {
 
     // Start listening
     const port = PORT || 5000;
+
+    const io = new Server(server, {
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST", "PATCH", "DELETE"],
+      },
+    });
+
+    // Make io accessible everywhere (controllers, services)
+    app.set("io", io);
+
+    // Optional: log connections
+    io.on("connection", (socket) => {
+      logger.info("Socket connected:");
+    });
+
+
     server.listen(port, () => {
       logger.info(`Server running on port ${port}`);
       logger.info(`Health check: http://localhost:${port}/health`);
