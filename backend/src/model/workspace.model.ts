@@ -8,7 +8,7 @@ const workspaceSchema = new mongoose.Schema({
     // Members who have access to this workspace
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     // Optional: Invite code for joining
-    joinCode: { type: String, unique: true } 
+    joinCode: { type: String, unique: true, sparse: true }
 }, { timestamps: true });
 
 export default mongoose.model("Workspace", workspaceSchema);

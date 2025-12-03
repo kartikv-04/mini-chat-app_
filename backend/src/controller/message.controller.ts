@@ -17,6 +17,13 @@ export async function sendMessage(req: Request, res: Response) {
       userId,
     });
 
+    await msg.populate("sender", "username email isOnline");
+
+    const io = req.app.get("io");
+    if (io) {
+      io.to(channelId).emit("message:new", msg);
+    }
+
     return res.status(201).json({
       success: true,
       data: msg,
@@ -33,7 +40,7 @@ export async function getChannelMessages(req: Request, res: Response) {
   try {
     const { channelId } = req.params;
     const page = Number(req.query.page) || 1;
-    if(!channelId) {
+    if (!channelId) {
       throw new Error("channelId is required");
     }
 
@@ -57,7 +64,7 @@ export async function editMessage(req: Request, res: Response) {
     const { content } = req.body;
     const userId = (req as any).user.id;
 
-    if(!messageId) {
+    if (!messageId) {
       throw new Error("messageId is required");
     }
 
@@ -80,7 +87,7 @@ export async function deleteMessage(req: Request, res: Response) {
     const { messageId } = req.params;
     const userId = (req as any).user.id;
 
-    if(!messageId) {
+    if (!messageId) {
       throw new Error("messageId is required");
     }
 

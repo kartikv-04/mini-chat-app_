@@ -13,18 +13,18 @@ export const socketAuth = (socket: Socket, next: (err?: Error) => void) => {
     }
 
     const decoded = jwt.verify(token, ACCESS_SECRET!) as {
-      userId: string;
+      id: string;
       email: string;
     };
 
     // Attach user to socket
     (socket as any).user = {
-      id: decoded.userId, 
+      id: decoded.id,
       email: decoded.email
     };
 
     next();
-  } catch (error : any) {
+  } catch (error: any) {
     logger.error("Socket auth error:", error);
     next(new Error("Authentication error: Invalid token"));
   }

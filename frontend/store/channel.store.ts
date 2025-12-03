@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { api } from "@/lib/api";
 
 interface Channel {
-  id: string;
+  _id: string;
   name: string;
   description?: string;
 }
@@ -20,7 +20,7 @@ export const useChannelStore = create<ChannelState>((set) => ({
   currentChannel: null,
 
   fetchChannels: async (workspaceId) => {
-    const res = await api.get(`/channels/${workspaceId}`);
+    const res = await api.get(`/channels/workspace/${workspaceId}`);
     set({ channels: res.data.data });
   },
 

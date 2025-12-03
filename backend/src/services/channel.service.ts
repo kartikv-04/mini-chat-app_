@@ -3,7 +3,7 @@ import channelModel from "../model/channel.model.js";
 import logger from "../config/logger.js";
 import mongoose from "mongoose";
 
-export const getAllChannel = async ( workspaceId : string ) => {
+export const getAllChannel = async (workspaceId: string) => {
     try {
         // Find all channels where workspace matches these ID
         const channels = await channelModel.find({
@@ -19,14 +19,14 @@ export const getAllChannel = async ( workspaceId : string ) => {
 
 }
 
-export const createChannelService = async (channelName: string, channelDescription: string, workspaceId: string, userId :string) => {
+export const createChannelService = async (channelName: string, channelDescription: string, workspaceId: string, userId: string) => {
     try {
         // Create channel with all required details
         const newchannel = new channelModel({
             name: channelName,
             description: channelDescription,
             workspace: new mongoose.Types.ObjectId(workspaceId),
-            createdBy : new mongoose.Types.ObjectId(userId),
+            createdBy: new mongoose.Types.ObjectId(userId),
         })
 
         // Save new Channel
@@ -36,7 +36,7 @@ export const createChannelService = async (channelName: string, channelDescripti
     }
     catch (error: any) {
         logger.error("Error in creating channel : " + error.message);
-        throw new Error("Error creating channel");
+        throw error;
     }
 }
 
@@ -80,16 +80,16 @@ export const channelUpdateService = async (channelId: string, updateData: { name
     }
 }
 
-export const deleteChannelService = async (channelId : string) => {
+export const deleteChannelService = async (channelId: string) => {
     try {
         // Delete the channel
         const result = await channelModel.findByIdAndDelete(channelId);
-        if(!result){
+        if (!result) {
             logger.error("Channel not found to delete");
             throw new Error("Channel not found to delete");
         }
         logger.info("Channel deletedd Successfully");
-        return { message : "Channel Deleted Successfully"};
+        return { message: "Channel Deleted Successfully" };
     }
     catch (error: any) {
         logger.error("Error deleting channel : " + error.message);

@@ -10,12 +10,12 @@ const router = Router();
 router.use("/auth", authRouter);
 
 // channel route
-router.use("/channel", channelRouter)
+router.use("/channels", channelRouter)
 
 // message route
-router.use("/message", messageRouter)
+router.use("/messages", messageRouter)
 
 // Workspace router
-router.use("/workspace", workspaceRouter)
+router.use("/workspaces", workspaceRouter)
 
 export default router;

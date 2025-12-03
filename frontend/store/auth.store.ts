@@ -3,12 +3,13 @@ import { create } from "zustand";
 interface AuthState {
   token: string | null;
   user: {
-    id: string;
+    _id: string;
     email: string;
+    username: string;
   } | null;
 
   setToken: (token: string) => void;
-  setUser: (user: { id: string; email: string }) => void;
+  setUser: (user: { _id: string; email: string; username: string }) => void;
   logout: () => void;
 }
 

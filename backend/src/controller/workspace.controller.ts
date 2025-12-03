@@ -20,6 +20,7 @@ export async function createWorkspace(req: Request, res: Response) {
       data: workspace,
     });
   } catch (err: any) {
+    console.error("Create workspace error:", err);
     res.status(400).json({
       success: false,
       error: err.message,
@@ -57,6 +58,7 @@ export async function joinWorkspace(req: Request, res: Response) {
       data: workspace,
     });
   } catch (err: any) {
+    console.error("Join workspace error:", err);
     res.status(400).json({
       success: false,
       error: err.message,
@@ -68,7 +70,7 @@ export async function getWorkspaceDetails(req: Request, res: Response) {
   try {
     const { workspaceId } = req.params;
 
-    if(!workspaceId) {
+    if (!workspaceId) {
       throw new Error("workspaceId is required");
     }
 
@@ -92,7 +94,7 @@ export async function updateWorkspace(req: Request, res: Response) {
     const { workspaceId } = req.params;
     const updates = req.body;
 
-    if(!workspaceId) {
+    if (!workspaceId) {
       throw new Error("workspaceId is required");
     }
 
@@ -119,7 +121,7 @@ export async function deleteWorkspace(req: Request, res: Response) {
     const userId = (req as any).user.id;
     const { workspaceId } = req.params;
 
-    if(!workspaceId) {
+    if (!workspaceId) {
       throw new Error("workspaceId is required");
     }
 

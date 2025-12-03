@@ -1,15 +1,19 @@
 import workspaceModel from "../model/workspace.model.js";
 import userModel from "../model/user.model.js";
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 // 1. Create workspace
 export async function createWorkspaceService(userId: string, name: string) {
     if (!name) throw new Error("Workspace name is required");
 
+    const joinCode = crypto.randomBytes(4).toString("hex"); // Generates 8-char hex code
+
     const workspace = await workspaceModel.create({
         name,
         owner: userId,
         members: [userId],
+        joinCode,
     });
 
     return workspace;
@@ -20,8 +24,9 @@ export async function getUserWorkspacesService(userId: string) {
     const workspaces = await workspaceModel.find({
         members: userId,
     })
-        .populate("owner", "_id name email")
-        .select("_id name owner");
+        .populate("owner", "_id username email")
+        .populate("members", "_id username email isOnline")
+        .select("_id name owner joinCode members");
 
     return workspaces;
 }
@@ -30,7 +35,7 @@ export async function getUserWorkspacesService(userId: string) {
 export async function joinWorkspaceService(userId: string, code: string) {
     if (!code) throw new Error("Join code is required");
 
-    const workspace = await workspaceModel.findOne({ inviteCode: code });
+    const workspace = await workspaceModel.findOne({ joinCode: code });
     if (!workspace) throw new Error("Invalid workspace code");
 
     if (!userId) {
