@@ -7,7 +7,7 @@ import { ACCESS_SECRET, REFRESH_SECRET } from "../config/env.js";
 
 // auth service file to handle authenticatoin login 
 
-export const signupService = async (username : string, email: string, password: string) => {
+export const signupService = async (username: string, email: string, password: string) => {
 
     try {
         // Check if feilds are not empty
@@ -23,8 +23,8 @@ export const signupService = async (username : string, email: string, password: 
             throw new Error("Email already exists!");
         }
 
-        const usernameExist = await userModel.findOne({ username})
-        if(usernameExist){
+        const usernameExist = await userModel.findOne({ username })
+        if (usernameExist) {
             logger.error("USername already exists!");
             throw new Error("Username already exists!");
         }
@@ -44,9 +44,9 @@ export const signupService = async (username : string, email: string, password: 
         const newUser = await createUser.save();
         logger.info(`User created successfully with email : ${email}`);
         return {
-            id : newUser._id,
-            username : newUser.username,
-            email : newUser.email,
+            id: newUser._id,
+            username: newUser.username,
+            email: newUser.email,
 
 
         }
@@ -97,20 +97,29 @@ export const loginService = async (email: string, password: string) => {
 
         // Return Tokens
         logger.info(`User logged in Successfully! with email : ${email}`);
-        return {userExist, accessToken};
+        return {
+            user: {
+                id: userExist._id,
+                username: userExist.username,
+                email: userExist.email,
+            },
+            accessToken,
+            refreshToken,
+        };
+
     }
-    catch (error : any) {
+    catch (error: any) {
         logger.error("Error in signing in user");
         throw new Error("Error in signing in user :", error.message);
     }
 
-    
+
 }
 
-export const logoutService = async (userId : string) => {
+export const logoutService = async (userId: string) => {
     try {
         const user = await userModel.findById(userId);
-        if(!user){
+        if (!user) {
             logger.error("User not found ");
             throw Error("USer not found");
         }
@@ -120,9 +129,9 @@ export const logoutService = async (userId : string) => {
         user.isOnline = false;
         await user.save();
         logger.info("USer logged out Successfully");
-        return { message : "Logged out Successfully" };
+        return { message: "Logged out Successfully" };
     }
-    catch(error : any){
+    catch (error: any) {
         logger.error("Error in loggin out user");
         throw new Error("Error in loggin out user : " + error.message);
     }

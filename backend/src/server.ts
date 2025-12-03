@@ -1,4 +1,3 @@
-// src/server.ts
 import express from "express";
 import http from "http";
 import cors from "cors";
@@ -9,57 +8,64 @@ import type { Request, Response } from "express";
 import indexrouter from "./routes/routes.js";
 import { Server } from "socket.io";
 
+// socket imports
+import { socketAuth } from "./middleware/socketauth.js";
+import registerChatSocketHandlers from "./sockets/sockets.chat.js";
 
+// --------------------- EXPRESS ---------------------
 
-// Create Express app FIRST
 const app = express();
-const server = http.createServer(app); // Needed for Socket.io later
+const server = http.createServer(app);
 
+// --------------------- MIDDLEWARE ---------------------
 
-// Middleware
-app.use(cors()); // Enable CORS for frontend
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check route
+// --------------------- ROUTES ---------------------
+
 app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
-// Routes
 app.use("/api/v1", indexrouter);
 
+// --------------------- SERVER BOOT ---------------------
 
-// Start server function
 const startServer = async () => {
   if (!MONGO_URI) {
-    logger.error("MONGO_URI is not defined in environment variables");
+    logger.error("MONGO_URI is not defined");
     process.exit(1);
   }
 
   try {
-    // Connect to database
     await connectDatabase(MONGO_URI);
     logger.info("Database connected successfully");
 
-    // Start listening
     const port = PORT || 5000;
+
+    // --------------------- SOCKET.IO ---------------------
 
     const io = new Server(server, {
       cors: {
-        origin: "*",
+        origin: process.env.FRONTEND_URL || "http://localhost:3000",
         methods: ["GET", "POST", "PATCH", "DELETE"],
+        credentials: true
       },
     });
 
-    // Make io accessible everywhere (controllers, services)
-    app.set("io", io);
+    // Auth middleware for socket
+    io.use(socketAuth);
 
-    // Optional: log connections
+    // Register handlers
     io.on("connection", (socket) => {
-      logger.info("Socket connected:");
+      logger.info(`🔌 Socket connected: ${socket.id}`);
+      registerChatSocketHandlers(io, socket);
     });
 
+    // Expose io to controllers if needed
+    app.set("io", io);
 
     server.listen(port, () => {
       logger.info(`Server running on port ${port}`);
@@ -72,8 +78,7 @@ const startServer = async () => {
   }
 };
 
-// Start the server
 startServer();
 
 export default app;
-export { server }; // Export server for Socket.io setup later
+export { server };
