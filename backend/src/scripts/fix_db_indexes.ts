@@ -29,7 +29,7 @@ const fixIndexes = async () => {
         logger.info("Index fix complete. You can now restart the backend.");
         process.exit(0);
     } catch (error) {
-        logger.error("Error fixing indexes:", error);
+        logger.error("Error fixing indexes: " + (error as any).message);
         process.exit(1);
     }
 };

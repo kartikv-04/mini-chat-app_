@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
 import { signupService, loginService, logoutService, getMeService } from "../services/auth.service.js";
 import type { AuthRequest } from "../middleware/authenticate.js";
 
@@ -78,12 +78,12 @@ export const getMe = async (req: AuthRequest, res: Response) => {
             });
         }
         const user = await getMeService(req.user.id);
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: user
         });
     } catch (error: any) {
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             error: error.message || "Error fetching user profile"
         });

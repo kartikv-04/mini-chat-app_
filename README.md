@@ -51,7 +51,7 @@ A full-stack team chat application built with the MERN stack (MongoDB, Express, 
    PORT=4000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   CLIENT_URL=http://localhost:3000
+   FRONTEND_URL=http://localhost:3000
    ```
 
 3. **Frontend Setup**

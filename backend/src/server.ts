@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // --------------------- ROUTES ---------------------
 
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
