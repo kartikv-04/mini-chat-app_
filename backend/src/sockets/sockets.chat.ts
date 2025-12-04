@@ -41,6 +41,18 @@ export default function registerChatSocketHandlers(io: Server, socket: AuthSocke
     logger.info(`User ${userId} left channel ${channelId}`);
   });
 
+  // ------------------ WORKSPACE EVENTS ------------------
+
+  socket.on("join-workspace", (workspaceId: string) => {
+    socket.join(workspaceId);
+    logger.info(`User ${userId} joined workspace ${workspaceId}`);
+  });
+
+  socket.on("leave-workspace", (workspaceId: string) => {
+    socket.leave(workspaceId);
+    logger.info(`User ${userId} left workspace ${workspaceId}`);
+  });
+
   // ------------------ MESSAGE EVENTS ------------------ 
 
   socket.on("message:send", async ({ channelId, content }: { channelId: string; content: string }) => {
@@ -55,7 +67,7 @@ export default function registerChatSocketHandlers(io: Server, socket: AuthSocke
 
       // Send to everyone in channel (including sender)
       io.to(channelId).emit("message:new", message);
-      
+
       logger.info(`Message sent in channel ${channelId} by user ${userId}`);
     } catch (error: any) {
       logger.error("Error sending message:", error.message);

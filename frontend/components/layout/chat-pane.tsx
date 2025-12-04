@@ -54,16 +54,24 @@ export default function ChatPane() {
             }
         }
 
+        function onMessageUpdate(updatedMessage: any) {
+            if (currentChannel && updatedMessage.channel.toString() === currentChannel._id.toString()) {
+                updateMessage(updatedMessage._id, updatedMessage.content);
+            }
+        }
+
         socket.on("connect", () => {
 
         });
 
         socket.on("message:new", onMessageNew);
+        socket.on("message:update", onMessageUpdate);
 
         return () => {
             socket.off("message:new", onMessageNew);
+            socket.off("message:update", onMessageUpdate);
         };
-    }, [currentChannel, addMessage]);
+    }, [currentChannel, addMessage, updateMessage]);
 
     // Join/Leave Channel Room
     useEffect(() => {

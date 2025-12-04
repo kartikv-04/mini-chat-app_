@@ -21,6 +21,11 @@ export const createChannel = async (req: Request, res: Response) => {
 
     const channel = await createChannelService(name, description, workspaceId, userId);
 
+    const io = req.app.get("io");
+    if (io) {
+      io.to(workspaceId).emit("channel:new", channel);
+    }
+
     return res.status(201).json({
       success: true,
       data: channel,

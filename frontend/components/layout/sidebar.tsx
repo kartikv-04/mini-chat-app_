@@ -102,8 +102,9 @@ export default function Sidebar() {
             await fetchWorkspaces();
             setCurrentWorkspace(null as any); // Clear current
             setIsDeleteOpen(false);
-        } catch (error) {
-
+        } catch (error: any) {
+            console.error("Failed to delete workspace:", error);
+            alert(error.response?.data?.error || "Failed to delete workspace");
         }
     };
 
@@ -132,6 +133,40 @@ export default function Sidebar() {
 
         }
     };
+
+    const { getSocket } = require("@/lib/socket");
+
+    // ... (existing state)
+
+    // Socket: Join Workspace Room
+    useEffect(() => {
+        const socket = getSocket();
+        if (!socket || !currentWorkspace) return;
+
+        if (!socket.connected) socket.connect();
+
+        socket.emit("join-workspace", currentWorkspace._id);
+
+        function onChannelNew(newChannel: any) {
+            if (currentWorkspace && newChannel.workspace === currentWorkspace._id) {
+                // We need to update the store. 
+                // Since fetchChannels overwrites, we can just append or refetch.
+                // Refetch is safer.
+                fetchChannels(currentWorkspace._id);
+            }
+        }
+
+        socket.on("channel:new", onChannelNew);
+
+        return () => {
+            socket.emit("leave-workspace", currentWorkspace._id);
+            socket.off("channel:new", onChannelNew);
+        };
+    }, [currentWorkspace, fetchChannels]);
+
+    // ... (existing handlers)
+
+
 
     useEffect(() => {
         if (currentWorkspace) {

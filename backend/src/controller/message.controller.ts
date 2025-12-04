@@ -70,6 +70,15 @@ export async function editMessage(req: Request, res: Response) {
 
     const msg = await editMessageService(messageId, userId, content);
 
+    const io = req.app.get("io");
+    if (io) {
+      // Assuming message has channelId populated or we can get it. 
+      // editMessageService returns the message. Let's check if it has channel.
+      // If not, we might need to fetch it or pass it.
+      // Looking at service, it returns updated message.
+      io.to(msg.channel.toString()).emit("message:update", msg);
+    }
+
     return res.json({
       success: true,
       data: msg,
