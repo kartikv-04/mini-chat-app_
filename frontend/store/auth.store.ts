@@ -10,6 +10,7 @@ interface AuthState {
 
   setToken: (token: string) => void;
   setUser: (user: { _id: string; email: string; username: string }) => void;
+  fetchUser: () => Promise<void>;
   logout: () => void;
 }
 
@@ -24,6 +25,19 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) => {
     set({ user });
+  },
+
+  fetchUser: async () => {
+    try {
+      const { api } = require("@/lib/api");
+      const res = await api.get("/auth/me");
+      set({ user: res.data.data });
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      // If fetch fails (e.g. 401), logout
+      set({ token: null, user: null });
+      localStorage.removeItem("accessToken");
+    }
   },
 
   logout: () => {

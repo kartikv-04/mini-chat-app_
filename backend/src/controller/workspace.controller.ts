@@ -20,7 +20,7 @@ export async function createWorkspace(req: Request, res: Response) {
       data: workspace,
     });
   } catch (err: any) {
-    console.error("Create workspace error:", err);
+
     res.status(400).json({
       success: false,
       error: err.message,
@@ -58,7 +58,7 @@ export async function joinWorkspace(req: Request, res: Response) {
       data: workspace,
     });
   } catch (err: any) {
-    console.error("Join workspace error:", err);
+
     res.status(400).json({
       success: false,
       error: err.message,

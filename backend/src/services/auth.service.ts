@@ -44,20 +44,15 @@ export const signupService = async (username: string, email: string, password: s
         const newUser = await createUser.save();
         logger.info(`User created successfully with email : ${email}`);
         return {
-            id: newUser._id,
+            _id: newUser._id,
             username: newUser.username,
             email: newUser.email,
-
-
         }
     }
     catch (error: any) {
         logger.error("Error in creating new USer");
         throw new Error(error.message || "Error in creating new User");
     }
-
-
-
 }
 
 export const loginService = async (email: string, password: string) => {
@@ -99,7 +94,7 @@ export const loginService = async (email: string, password: string) => {
         logger.info(`User logged in Successfully! with email : ${email}`);
         return {
             user: {
-                id: userExist._id,
+                _id: userExist._id,
                 username: userExist.username,
                 email: userExist.email,
             },
@@ -134,5 +129,23 @@ export const logoutService = async (userId: string) => {
     catch (error: any) {
         logger.error("Error in loggin out user");
         throw new Error("Error in loggin out user : " + error.message);
+    }
+}
+
+export const getMeService = async (userId: string) => {
+    try {
+        const user = await userModel.findById(userId).select("-password");
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            isOnline: user.isOnline,
+            lastSeen: user.lastSeen
+        };
+    } catch (error: any) {
+        throw new Error(error.message || "Error fetching user profile");
     }
 }

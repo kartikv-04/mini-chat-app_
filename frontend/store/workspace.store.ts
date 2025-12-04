@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 interface Workspace {
   _id: string;
   name: string;
+  description?: string;
   owner: string;
   members: { _id: string; username: string; email: string; isOnline: boolean }[];
   joinCode?: string;

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 const workspaceSchema = new mongoose.Schema({
     name: { type: String, required: true, trim: true },
+    description: { type: String, trim: true },
     // The owner has admin rights (can delete workspace, etc.)
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     // Members who have access to this workspace

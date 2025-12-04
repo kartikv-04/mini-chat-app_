@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
-import { signupService, loginService, logoutService } from "../services/auth.service.js";
+import { signupService, loginService, logoutService, getMeService } from "../services/auth.service.js";
+import type { AuthRequest } from "../middleware/authenticate.js";
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -65,5 +66,26 @@ export const signout = async (req: Request, res: Response) => {
             success: false,
             error: error.message || "Error in logging out user"
         })
+    }
+}
+
+export const getMe = async (req: AuthRequest, res: Response) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({
+                success: false,
+                error: "Unauthorized"
+            });
+        }
+        const user = await getMeService(req.user.id);
+        res.status(200).json({
+            success: true,
+            data: user
+        });
+    } catch (error: any) {
+        res.status(400).json({
+            success: false,
+            error: error.message || "Error fetching user profile"
+        });
     }
 }

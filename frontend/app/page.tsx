@@ -15,8 +15,15 @@ export default function Home() {
   const workspaces = useWorkspaceStore((state) => state.workspaces);
   const fetchWorkspaces = useWorkspaceStore((state) => state.fetchWorkspaces);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     if (!token) {
       router.push("/login");
       return;
@@ -24,18 +31,25 @@ export default function Home() {
 
     const init = async () => {
       try {
+        // Fetch user profile if not already loaded (or on refresh)
+        if (!user) {
+          await useAuthStore.getState().fetchUser();
+        }
         await fetchWorkspaces();
       } catch (error) {
-        console.error("Failed to fetch workspaces:", error);
+
       } finally {
         setLoading(false);
       }
     };
 
     init();
-  }, [token, router, fetchWorkspaces]);
+  }, [token, router, fetchWorkspaces, user, mounted]);
 
-  if (!token) return null; // Or a loading spinner
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!mounted) return null;
+
+  if (!token) return null;
 
   if (loading) {
     return (
@@ -43,6 +57,11 @@ export default function Home() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // Show onboarding if no workspaces
+  if (workspaces.length === 0) {
+    return <Hero />;
   }
 
   // Always show the Main App Layout. Empty states are handled within the layout components.

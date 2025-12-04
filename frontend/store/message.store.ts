@@ -19,6 +19,7 @@ interface MessageState {
   fetchMessages: (channelId: string, page?: number) => Promise<void>;
   sendMessage: (channelId: string, content: string) => Promise<void>;
   addMessage: (msg: Message) => void;
+  updateMessage: (messageId: string, content: string) => void;
   clearMessages: () => void;
 }
 
@@ -38,6 +39,13 @@ export const useMessageStore = create<MessageState>((set) => ({
   addMessage: (msg) =>
     set((state) => ({
       messages: [...state.messages, msg],
+    })),
+
+  updateMessage: (messageId, content) =>
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m._id === messageId ? { ...m, content, isEdited: true } : m
+      ),
     })),
 
   clearMessages: () => set({ messages: [] }),
