@@ -1,0 +1,10 @@
+# Cursor Project Rules for Threadr
+Refer to AGENTS.md in the repository root for full codebase rules and architecture.
+
+- Always explain terminal commands before proposing them.
+- Do not perform git commits or pushes automatically.
+- Keep TypeScript strictly typed (no `any` without justification).
+- Run lint and test suites before concluding tasks:
+  - Backend: `npm --prefix backend run lint && npm --prefix backend test`
+  - Frontend: `npm --prefix frontend run lint && npm --prefix frontend test`
+  - Build: `npm --prefix frontend run build`
